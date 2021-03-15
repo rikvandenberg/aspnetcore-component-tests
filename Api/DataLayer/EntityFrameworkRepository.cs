@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace Api.DataLayer
 {
@@ -8,13 +9,22 @@ namespace Api.DataLayer
         where T : class
     {
         private readonly OrderDbContext _dbContext;
+        private readonly ILogger<EntityFrameworkRepository<T>> _logger;
 
-        public EntityFrameworkRepository(OrderDbContext dbContext)
+        public EntityFrameworkRepository(OrderDbContext dbContext, ILogger<EntityFrameworkRepository<T>> logger)
         {
             _dbContext = dbContext;
+            _logger = logger;
         }
 
-        public IQueryable<T> AllRecords => _dbContext.Set<T>();
+        public IQueryable<T> AllRecords
+        {
+            get
+            {
+                _logger.LogInformation("AllRecords called to query the result");
+                return _dbContext.Set<T>();
+            }
+        }
 
         public Task CreateAsync(T entity)
         {

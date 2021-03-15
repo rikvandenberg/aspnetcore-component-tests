@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Api.Controllers
+namespace Api.ApiLayer
 {
     public class CreateOrderDto
     {

@@ -5,7 +5,7 @@ using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Controllers
+namespace Api.ApiLayer
 {
     [ApiController]
     public class UserController

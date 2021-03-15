@@ -6,8 +6,9 @@ using Api.BusinessLayer;
 using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
-namespace Api.Controllers
+namespace Api.ApiLayer
 {
     [ApiController]
     [Route("api/v1/orders")]
@@ -15,16 +16,19 @@ namespace Api.Controllers
     {
         private readonly IRepository<Order> _repository;
         private readonly IProductsService _productsService;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IRepository<Order> repository, IProductsService productsService)
+        public OrderController(IRepository<Order> repository, IProductsService productsService, ILogger<OrderController> logger)
         {
             _repository = repository;
             _productsService = productsService;
+            _logger = logger;
         }
 
         [HttpGet]
         public IEnumerable<Order> Get()
         {
+            _logger.LogInformation("GET /api/v1/orders invoked as show as a log");
             return _repository.AllRecords.Include(o => o.Lines).ToList();
         }
 
@@ -40,7 +44,7 @@ namespace Api.Controllers
             };
             foreach (string productNumber in request.ProductNumbers)
             {
-                Product? product = await _productsService.GetProductAsync(productNumber);
+                Product product = await _productsService.GetProductAsync(productNumber);
                 if (product == null)
                 {
                     return BadRequest($"Unable to find product: {productNumber}");
