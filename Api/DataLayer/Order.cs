@@ -11,14 +11,18 @@ namespace Api
 
         public DateTime Date { get; set; }
 
-        public ICollection<Product> Products { get; set; }
+        public ICollection<OrderLine> Lines { get; set; } = new List<OrderLine>();
 
         public Guid UserId { get; set; }
     }
 
-    public class Product
+    public class OrderLine
     {
-        public string Number { get; set; }
+        public Guid Id { get; set; }
+
+        public Guid OrderId { get; set; }
+
+        public string ProductNumber { get; set; }
 
         public decimal Quantity { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -10,16 +11,21 @@ namespace Api.Controllers
     [Route("api/v1/orders")]
     public class OrderController : ControllerBase
     {
+        private readonly OrderDbContext _dbContext;
         private readonly ILogger<OrderController> _logger;
 
-        public OrderController(ILogger<OrderController> logger)
+        public OrderController(
+            OrderDbContext dbContext,
+            ILogger<OrderController> logger)
         {
+            _dbContext = dbContext;
             _logger = logger;
         }
 
         [HttpGet]
         public IEnumerable<Order> Get()
         {
+            return _dbContext.Order.ToList();
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new Order
             {
@@ -27,9 +33,9 @@ namespace Api.Controllers
                 UserId = Guid.NewGuid(),
                 Date = DateTime.Now.AddDays(index),
                 TotalAmount = rng.Next(15, 513),
-                Products = Enumerable.Range(1, 3).Select(i => new Product
+                Lines = Enumerable.Range(1, 3).Select(i => new OrderLine
                 {
-                    Number = $"Product#{i}",
+                    ProductNumber = $"Product#{i}",
                     Quantity = 1,
                     Amount = 121,
                     Vat = 21m
