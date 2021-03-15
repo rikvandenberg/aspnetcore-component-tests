@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Api.BusinessLayer;
 using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace Api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IRepository<Order> _repository;
+        private readonly IProductsService _productsService;
 
-        public OrderController(IRepository<Order> repository)
+        public OrderController(IRepository<Order> repository, IProductsService productsService)
         {
             _repository = repository;
+            _productsService = productsService;
         }
 
         [HttpGet]
@@ -26,28 +29,35 @@ namespace Api.Controllers
         }
 
         [HttpPost]
-        public async Task Post(CreateOrderDto request)
+        public async Task<IActionResult> Post(CreateOrderDto request)
         {
-            var order = new Order
+            Order order = new Order
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
                 Date = DateTime.UtcNow,
                 TotalAmount = request.TotalAmount,
             };
-            foreach (string product in request.ProductNumbers)
+            foreach (string productNumber in request.ProductNumbers)
             {
+                Product? product = await _productsService.GetProductAsync(productNumber);
+                if (product == null)
+                {
+                    return BadRequest($"Unable to find product: {productNumber}");
+                }
                 order.Lines.Add(new OrderLine
                 {
-                    Amount = 0,
                     OrderId = order.Id,
-                    ProductNumber = product,
-                    Quantity = 1,
-                    Vat = 0,
+                    Amount = product.Price,
+                    ProductNumber = product.Id,
+                    Quantity = product.Quantity,
+                    Vat = product.Vat
                 });
             }
 
             await _repository.CreateAsync(order);
+
+            return Ok(order);
         }
     }
 }

@@ -1,4 +1,7 @@
+using System;
+using Api.BusinessLayer;
 using Api.DataLayer;
+using Api.Shopify;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +30,17 @@ namespace Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
             });
 
+            ConfigureBusinessLayer(services);
             ConfigureDataLayer(services);
+        }
+
+        private void ConfigureBusinessLayer(IServiceCollection services)
+        {
+            services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
+            {
+                client.BaseAddress = new Uri(Configuration["Shopify:BaseUrl"]);
+                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:BaseUrl"]);
+            });
         }
 
         private void ConfigureDataLayer(IServiceCollection services)
