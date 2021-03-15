@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace Api.Controllers
 {
@@ -11,36 +9,17 @@ namespace Api.Controllers
     [Route("api/v1/orders")]
     public class OrderController : ControllerBase
     {
-        private readonly OrderDbContext _dbContext;
-        private readonly ILogger<OrderController> _logger;
+        private readonly IRepository<Order> _repository;
 
-        public OrderController(
-            OrderDbContext dbContext,
-            ILogger<OrderController> logger)
+        public OrderController(IRepository<Order> repository)
         {
-            _dbContext = dbContext;
-            _logger = logger;
+            _repository = repository;
         }
 
         [HttpGet]
         public IEnumerable<Order> Get()
         {
-            return _dbContext.Order.ToList();
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new Order
-            {
-                Id = Guid.NewGuid(),
-                UserId = Guid.NewGuid(),
-                Date = DateTime.Now.AddDays(index),
-                TotalAmount = rng.Next(15, 513),
-                Lines = Enumerable.Range(1, 3).Select(i => new OrderLine
-                {
-                    ProductNumber = $"Product#{i}",
-                    Quantity = 1,
-                    Amount = 121,
-                    Vat = 21m
-                }).ToList(),
-            });
+            return _repository.AllRecords.ToList();
         }
     }
 }

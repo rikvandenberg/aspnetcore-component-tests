@@ -34,6 +34,7 @@ namespace Api
         {
             services.AddDbContext<OrderDbContext>(
                 options => options.UseSqlite("Data Source=orders.db"));
+            services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
