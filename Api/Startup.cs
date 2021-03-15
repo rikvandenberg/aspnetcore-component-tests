@@ -1,4 +1,8 @@
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using Api.BusinessLayer;
 using Api.DataLayer;
 using Api.Shopify;
@@ -9,6 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Extensions.Http;
+using Polly.Registry;
 
 namespace Api
 {
@@ -36,11 +43,17 @@ namespace Api
 
         private void ConfigureBusinessLayer(IServiceCollection services)
         {
-            services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
+            PolicyRegistry registry = new PolicyRegistry();
+            registry.Add("defaultJsonResponse", HttpPolicyExtensions.HandleTransientHttpError()
+                .OrResult(response => response.StatusCode == HttpStatusCode.Forbidden)
+                .FallbackAsync(_ => Task.FromResult(new HttpResponseMessage { Content = new StringContent("{}", Encoding.UTF8) })));
+            services.AddPolicyRegistry(registry);
+
+            services.AddHttpClient<IProductsService, ShopifyProductsClient>("Shopify", client =>
             {
                 client.BaseAddress = new Uri(Configuration["Shopify:BaseUrl"]);
                 client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:BaseUrl"]);
-            });
+            }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
         }
 
         private void ConfigureDataLayer(IServiceCollection services)
