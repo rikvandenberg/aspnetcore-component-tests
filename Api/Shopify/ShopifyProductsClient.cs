@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -17,13 +18,20 @@ namespace Api.Shopify
 
         public async Task<Product?> GetProductAsync(string productId)
         {
-            GetProductResponseDto response =
-                await _httpClient.GetFromJsonAsync<GetProductResponseDto>($"/products/{productId}.json");
+            HttpResponseMessage responseMessage = 
+                await _httpClient.GetAsync($"admin/api/2021-07/products/{productId}.json");
+            if(responseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            responseMessage.EnsureSuccessStatusCode();
+            GetProductResponseDto response = await responseMessage.Content.ReadFromJsonAsync<GetProductResponseDto>();
             if (response?.Product != null)
             {
                 return new Product
                 {
-                    Id = response.Product.Id,
+                    Id = response.Product.Id.ToString(),
                     Price = response.Product.Variants.First().Price,
                     Vat = 0m,
                     Quantity = 1,

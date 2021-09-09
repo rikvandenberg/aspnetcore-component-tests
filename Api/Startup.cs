@@ -49,10 +49,10 @@ namespace Api
                 .FallbackAsync(_ => Task.FromResult(new HttpResponseMessage { Content = new StringContent("{}", Encoding.UTF8) })));
             services.AddPolicyRegistry(registry);
 
-            services.AddHttpClient<IProductsService, ShopifyProductsClient>("Shopify", client =>
+            services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["Shopify:BaseUrl"]);
-                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:BaseUrl"]);
+                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:ApiKey"]);
             }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
         }
 

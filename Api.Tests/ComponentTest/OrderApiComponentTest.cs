@@ -51,7 +51,7 @@ namespace Api.Tests
             IConfiguration configuration = _webApplicationFactory.Services.GetRequiredService<IConfiguration>();
 
             // Act/Assert
-            configuration["Shopify:ApiKey"].Should().Be("COMPONENT_TEST");
+            configuration["Shopify:ApiKey"].Should().Be("secret");
         }
 
         [Fact]
