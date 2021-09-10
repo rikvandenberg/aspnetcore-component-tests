@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,10 +28,23 @@ namespace Api.ApiLayer
         }
 
         [HttpGet]
-        public IEnumerable<Order> Get()
+        public IActionResult Get()
         {
             _logger.LogInformation("GET /api/v1/orders invoked as show as a log");
-            return _repository.AllRecords.Include(o => o.Lines).ToList();
+            return Ok(_repository.AllRecords.Include(o => o.Lines).ToList());
+        }
+
+        [HttpGet]
+        [Route("{orderId:guid}")]
+        public async Task<IActionResult> Get(Guid orderId)
+        {
+            _logger.LogInformation("GET /api/v1/orders/{orderId} invoked as show as a log");
+            Order? order = await _repository.GetByIdAsync(orderId.ToString());
+            if(order is null)
+            {
+                return NotFound();
+            }
+            return Ok(order);
         }
 
         [HttpPost]

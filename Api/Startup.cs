@@ -58,8 +58,7 @@ namespace Api
 
         private void ConfigureDataLayer(IServiceCollection services)
         {
-            services.AddDbContext<OrderDbContext>(
-                options => options.UseSqlite("Data Source=orders.db"));
+            services.AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=orders.db"));
             services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
         }
 
