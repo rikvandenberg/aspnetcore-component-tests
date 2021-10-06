@@ -58,8 +58,17 @@ namespace Api
 
         private void ConfigureDataLayer(IServiceCollection services)
         {
-            services.AddDbContext<OrderDbContext>(options => options.UseSqlite("Data Source=orders.db"));
+            services.AddDbContext<OrderDbContext>(
+                optionsBuilder => ConfigureDbContextOptions(optionsBuilder.UseSqlite("Data Source=orders.db")), 
+                optionsLifetime: ServiceLifetime.Singleton);
             services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
+        }
+
+        public static void ConfigureDbContextOptions(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .EnableDetailedErrors()
+                .EnableSensitiveDataLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

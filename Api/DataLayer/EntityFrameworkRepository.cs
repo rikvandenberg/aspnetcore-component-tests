@@ -44,7 +44,7 @@ namespace Api.DataLayer
             }
         }
 
-        public async Task<T?> GetByIdAsync(string id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }

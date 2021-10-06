@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,6 +10,8 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,16 +20,17 @@ using Xunit.Abstractions;
 
 namespace Api.Tests
 {
-
-    public class InMemoryRepositoryComponentTest
+    public class SqlLiteComponentTest : IDisposable
     {
         private readonly WebApplicationFactory<Program> _webApplicationFactory;
         private readonly ITestOutputHelper _testOutputHelper;
+        private readonly DbConnection _connection;
 
-        public InMemoryRepositoryComponentTest(ITestOutputHelper testOutputHelper)
+        public SqlLiteComponentTest(ITestOutputHelper testOutputHelper)
         {
             _webApplicationFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(CustomizeWebHostBuilder);
             _testOutputHelper = testOutputHelper;
+            _connection = CreateInMemoryDatabase();
         }
 
         private void CustomizeWebHostBuilder(IWebHostBuilder webHostBuilder)
@@ -47,18 +49,32 @@ namespace Api.Tests
                 })
                 .ConfigureTestServices(services =>
                 {
-                    services.AddSingleton(typeof(IRepository<>), typeof(InMemoryRepository<>));
+                    services.AddSingleton((serviceProvider) =>
+                    {
+                        var optionsBuilder = new DbContextOptionsBuilder<OrderDbContext>()
+                            .UseSqlite(_connection);
+                        return optionsBuilder.Options;
+                    });
                 });
         }
+
+        private static DbConnection CreateInMemoryDatabase()
+        {
+            var connection = new SqliteConnection("Filename=:memory:");
+            connection.Open();
+            return connection;
+        }
+
 
         [Fact]
         public async Task When_GET_is_called_on_the_api_should_return_200_OK()
         {
             // Arrange
+            using IServiceScope scope = _webApplicationFactory.Services.CreateScope();
             Fixture fixture = new Fixture();
             Order order = fixture.Create<Order>();
             order.Id = Guid.NewGuid();
-            IRepository<Order> repository = _webApplicationFactory.Services.GetRequiredService<IRepository<Order>>();
+            IRepository<Order> repository = scope.ServiceProvider.GetRequiredService<IRepository<Order>>();
             await repository.CreateAsync(order);
 
             // Act
@@ -80,47 +96,12 @@ namespace Api.Tests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
+        public void Dispose()
+        {
+            _connection.Dispose();
+        }
+
         public HttpClient SystemUnderTest =>
             _webApplicationFactory.CreateClient();
-    }
-
-    public sealed class InMemoryRepository<T> : IRepository<T>
-        where T : class
-    {
-        private readonly IDictionary<string, T> _entities = new Dictionary<string, T>();
-
-        public IQueryable<T> AllRecords => _entities.Values.AsQueryable();
-
-        public Task CreateAsync(T entity)
-        {
-            dynamic newEntity = entity;
-            _entities.Add(newEntity.Id.ToString(), entity);
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteAsync(Guid id)
-        {
-            if(_entities.ContainsKey(id.ToString()))
-            {
-                return Task.CompletedTask;
-            }
-
-            _entities.Remove(id.ToString());
-            return Task.CompletedTask;
-        }
-
-        public Task<T?> GetByIdAsync(Guid id)
-        {
-            return Task.FromResult(
-                _entities.ContainsKey(id.ToString())
-                ? _entities[id.ToString()]
-                : null);
-        }
-
-        public Task UpdateAsync(T entity)
-        {
-            // ReferenceType, don't need to do anything;
-            return Task.CompletedTask;
-        }
     }
 }

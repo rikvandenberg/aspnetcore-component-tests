@@ -39,7 +39,7 @@ namespace Api.ApiLayer
         public async Task<IActionResult> Get(Guid orderId)
         {
             _logger.LogInformation("GET /api/v1/orders/{orderId} invoked as show as a log");
-            Order? order = await _repository.GetByIdAsync(orderId.ToString());
+            Order? order = await _repository.GetByIdAsync(orderId);
             if(order is null)
             {
                 return NotFound();
