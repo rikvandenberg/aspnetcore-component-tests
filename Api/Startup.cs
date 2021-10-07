@@ -49,18 +49,26 @@ namespace Api
                 .FallbackAsync(_ => Task.FromResult(new HttpResponseMessage { Content = new StringContent("{}", Encoding.UTF8) })));
             services.AddPolicyRegistry(registry);
 
-            services.AddHttpClient<IProductsService, ShopifyProductsClient>("Shopify", client =>
+            services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
             {
                 client.BaseAddress = new Uri(Configuration["Shopify:BaseUrl"]);
-                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:BaseUrl"]);
+                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:ApiKey"]);
             }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
         }
 
         private void ConfigureDataLayer(IServiceCollection services)
         {
             services.AddDbContext<OrderDbContext>(
-                options => options.UseSqlite("Data Source=orders.db"));
+                optionsBuilder => ConfigureDbContextOptions(optionsBuilder.UseSqlite("Data Source=orders.db")), 
+                optionsLifetime: ServiceLifetime.Singleton);
             services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
+        }
+
+        public static void ConfigureDbContextOptions(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder
+                .EnableDetailedErrors()
+                .EnableSensitiveDataLogging();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

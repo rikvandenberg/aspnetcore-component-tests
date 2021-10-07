@@ -10,6 +10,8 @@ namespace Api.DataLayer
     {
         IQueryable<T> AllRecords { get; }
 
+        Task<T?> GetByIdAsync(Guid id);
+
         Task CreateAsync(T entity);
 
         Task DeleteAsync(Guid id);

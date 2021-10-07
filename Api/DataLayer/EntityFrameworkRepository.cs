@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -40,6 +42,11 @@ namespace Api.DataLayer
                 _dbContext.Set<T>().Remove(entity);
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<T?> GetByIdAsync(Guid id)
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
         }
 
         public Task UpdateAsync(T entity)
