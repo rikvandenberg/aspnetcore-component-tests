@@ -19,6 +19,8 @@ using System;
 using FluentAssertions;
 using System.Net;
 using Api.BusinessLayer;
+using Microsoft.EntityFrameworkCore;
+using Api.DataLayer;
 
 namespace Api.Tests
 {
