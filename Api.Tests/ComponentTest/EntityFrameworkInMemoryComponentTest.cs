@@ -49,7 +49,7 @@ namespace Api.Tests
                     services.AddSingleton((serviceProvider) =>
                     {
                         var optionsBuilder = new DbContextOptionsBuilder<OrderDbContext>().UseInMemoryDatabase("orders");
-                        Startup.ConfigureDbContextOptions(optionsBuilder);
+                        StartupUtilities.ConfigureDbContextOptions(optionsBuilder);
                         return optionsBuilder.Options;
                     });
                 });
@@ -61,7 +61,7 @@ namespace Api.Tests
         {
             // Arrange
             using IServiceScope scope = _webApplicationFactory.Services.CreateScope();
-            Fixture fixture = new Fixture();
+            Fixture fixture = new();
             Order order = fixture.Create<Order>();
             order.Id = Guid.NewGuid();
             IRepository<Order> repository = scope.ServiceProvider.GetRequiredService<IRepository<Order>>();

@@ -1,24 +1,33 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Api.DataLayer;
+using Microsoft.OpenApi.Models;
 
-namespace Api
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
-    {
-        // Not invoked with WebApplicationFactory<T>
-        public static async Task Main(string[] args)
-        {
-            IHostBuilder hostBuilder = CreateHostBuilder(args);
-            IHost host = hostBuilder.Build();
-            await host.RunAsync();
-        }
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Api", Version = "v1" });
+});
+builder.Services.ConfigurePolly();
+builder.Services.ConfigureApiLayer();
+builder.Services.ConfigureBusinessLayer(builder.Configuration);
+builder.Services.ConfigureDataLayer();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+WebApplication app = builder.Build();
+using IServiceScope scope = app.Services.CreateScope();
+OrderDbContext context = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    context.Database.EnsureCreated();
 }
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+app.Run();

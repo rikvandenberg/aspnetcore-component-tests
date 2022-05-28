@@ -5,8 +5,10 @@
 		<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<ItemGroup>
+		<InternalsVisibleTo Include="$(AssemblyName).Tests" /> 
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.5"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.5"/>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.5">

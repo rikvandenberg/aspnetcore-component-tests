@@ -55,7 +55,7 @@ namespace Api.Tests
         public async Task When_GET_is_called_on_the_api_should_return_200_OK()
         {
             // Arrange
-            Fixture fixture = new Fixture();
+            Fixture fixture = new();
             Order order = fixture.Create<Order>();
             order.Id = Guid.NewGuid();
             IRepository<Order> repository = _webApplicationFactory.Services.GetRequiredService<IRepository<Order>>();
@@ -100,7 +100,7 @@ namespace Api.Tests
 
         public Task DeleteAsync(Guid id)
         {
-            if(_entities.ContainsKey(id.ToString()))
+            if (_entities.ContainsKey(id.ToString()))
             {
                 return Task.CompletedTask;
             }

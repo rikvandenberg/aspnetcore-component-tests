@@ -1,14 +1,7 @@
-﻿#nullable enable
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Api.BusinessLayer;
 using Api.DataLayer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Api.ApiLayer
 {
@@ -49,7 +42,7 @@ namespace Api.ApiLayer
         [HttpPost]
         public async Task<IActionResult> Post(CreateOrderDto request)
         {
-            Order order = new Order
+            Order order = new()
             {
                 Id = Guid.NewGuid(),
                 UserId = request.UserId,
