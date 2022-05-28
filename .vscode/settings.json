@@ -1,0 +1,15 @@
+{
+    "files.exclude": {
+        ".*ignore": true,
+        "**/bin": true,
+        "**/obj": true
+    },
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "editor.formatOnSave": true,
+    "omnisharp.organizeImportsOnFormat": true,
+    "csharp.inlayHints.parameters.enabled": true,
+    "csharp.inlayHints.parameters.forObjectCreationParameters": true,
+    "csharp.inlayHints.types.forLambdaParameterTypes": true,
+    "csharp.inlayHints.types.forImplicitVariableTypes": true,
+    "omnisharp.enableRoslynAnalyzers": true
+}

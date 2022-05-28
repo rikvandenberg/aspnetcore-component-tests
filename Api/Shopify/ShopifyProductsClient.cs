@@ -18,26 +18,24 @@ namespace Api.Shopify
 
         public async Task<Product?> GetProductAsync(string productId)
         {
-            HttpResponseMessage responseMessage = 
+            HttpResponseMessage responseMessage =
                 await _httpClient.GetAsync($"admin/api/2021-07/products/{productId}.json");
-            if(responseMessage.StatusCode == HttpStatusCode.NotFound)
+            if (responseMessage.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
 
             responseMessage.EnsureSuccessStatusCode();
-            GetProductResponseDto response = await responseMessage.Content.ReadFromJsonAsync<GetProductResponseDto>();
-            if (response?.Product != null)
+            GetProductResponseDto? response = await responseMessage.Content.ReadFromJsonAsync<GetProductResponseDto>();
+            if (response?.Product is null)
             {
-                return new Product
-                {
-                    Id = response.Product.Id.ToString(),
-                    Price = response.Product.Variants.First().Price,
-                    Vat = 0m,
-                    Quantity = 1,
-                };
+                return null;
             }
-            return null;
+            return new Product(
+                response.Product.Id.ToString(),
+                response.Product.Variants.First().Price,
+                0m,
+                1);
         }
     }
 }

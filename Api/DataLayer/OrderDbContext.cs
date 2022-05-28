@@ -9,8 +9,7 @@ namespace Api.DataLayer
         {
         }
 
-        public DbSet<Order> Order { get; set; }
-
-        public DbSet<OrderLine> OrderLines { get; set; }
+        public DbSet<Order> Order => Set<Order>();
+        public DbSet<OrderLine> OrderLines => Set<OrderLine>();
     }
 }

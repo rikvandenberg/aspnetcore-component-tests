@@ -1,13 +1,3 @@
-﻿namespace Api.BusinessLayer
-{
-    public class Product
-    {
-        public string Id { get; set; }
+﻿namespace Api.BusinessLayer;
 
-        public decimal Price { get; set; }
-
-        public decimal Vat { get; set; }
-
-        public int Quantity { get; set; }
-    }
-}
+public record Product(string Id, decimal Price, decimal Vat, int Quantity);

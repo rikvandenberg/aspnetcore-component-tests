@@ -22,7 +22,7 @@ namespace Api
 
         public Guid OrderId { get; set; }
 
-        public string ProductNumber { get; set; }
+        public string ProductNumber { get; set; } = default!;
 
         public decimal Quantity { get; set; }
 

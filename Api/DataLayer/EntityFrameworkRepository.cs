@@ -36,8 +36,8 @@ namespace Api.DataLayer
 
         public async Task DeleteAsync(Guid id)
         {
-            T entity = await _dbContext.Set<T>().FindAsync(id);
-            if (entity != null)
+            T? entity = await _dbContext.Set<T>().FindAsync(id);
+            if (entity is not null)
             {
                 _dbContext.Set<T>().Remove(entity);
                 await _dbContext.SaveChangesAsync();

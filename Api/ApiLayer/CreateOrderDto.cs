@@ -11,6 +11,6 @@ namespace Api.ApiLayer
         [Required]
         public Guid UserId { get; set; }
 
-        public string[] ProductNumbers { get; set; }
+        public string[] ProductNumbers { get; set; } = default!;
     }
 }

@@ -38,9 +38,8 @@ namespace Api.ApiLayer
         [Route("{orderId:guid}")]
         public async Task<IActionResult> Get(Guid orderId)
         {
-            _logger.LogInformation("GET /api/v1/orders/{orderId} invoked as show as a log");
             Order? order = await _repository.GetByIdAsync(orderId);
-            if(order is null)
+            if (order is null)
             {
                 return NotFound();
             }
@@ -59,7 +58,7 @@ namespace Api.ApiLayer
             };
             foreach (string productNumber in request.ProductNumbers)
             {
-                Product product = await _productsService.GetProductAsync(productNumber);
+                Product? product = await _productsService.GetProductAsync(productNumber);
                 if (product == null)
                 {
                     return BadRequest($"Unable to find product: {productNumber}");
