@@ -11,5 +11,8 @@
     "csharp.inlayHints.parameters.forObjectCreationParameters": true,
     "csharp.inlayHints.types.forLambdaParameterTypes": true,
     "csharp.inlayHints.types.forImplicitVariableTypes": true,
-    "omnisharp.enableRoslynAnalyzers": true
+    "omnisharp.enableRoslynAnalyzers": true,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    }
 }
