@@ -1,9 +1,11 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text;
 using Api.BusinessLayer;
 using Api.DataLayer;
 using Api.Shopify;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Extensions.Http;
 using Polly.Registry;
@@ -39,15 +41,24 @@ internal static class StartupUtilities
 
     internal static void ConfigureBusinessLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        const string ShopifyBaseUrl = "Shopify:BaseUrl";
-        const string ShopifyApiKey = "Shopify:ApiKey";
-        configuration.ConfigureNotNullOrEmpty(ShopifyBaseUrl);
-        configuration.ConfigureNotNullOrEmpty(ShopifyApiKey);
-        services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
+        services.AddOptions<ShopifySettings>()
+            .Bind(configuration.GetSection("Shopify"))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        services.AddHttpClient<IProductsService, ShopifyProductsClient>((serviceProvider, client) =>
         {
-            client.BaseAddress = new Uri(configuration[ShopifyBaseUrl]);
-            client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", configuration[ShopifyApiKey]);
+            var settings = serviceProvider.GetRequiredService<IOptions<ShopifySettings>>();
+            client.BaseAddress = settings.Value.BaseUrl;
+            client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", settings.Value.ApiKey);
         }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
+    }
+
+    private sealed class ShopifySettings
+    {
+        [Required]
+        public Uri BaseUrl { get; init; } = default!;
+        [Required]
+        public string ApiKey { get; init; } = default!;
     }
 
     internal static void ConfigureDataLayer(this IServiceCollection services)

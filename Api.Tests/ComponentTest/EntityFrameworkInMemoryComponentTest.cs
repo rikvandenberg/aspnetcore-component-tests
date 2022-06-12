@@ -18,26 +18,22 @@ using Xunit.Abstractions;
 
 namespace Api.Tests
 {
+
     public class EntityFrameworkInMemoryComponentTest
+        : IClassFixture<CustomWebApplicationFactory<Program>>
     {
-        private readonly WebApplicationFactory<Program> _webApplicationFactory;
+        private readonly WebApplicationFactory<Program> _factory;
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public EntityFrameworkInMemoryComponentTest(ITestOutputHelper testOutputHelper)
+        public EntityFrameworkInMemoryComponentTest(ITestOutputHelper testOutputHelper, CustomWebApplicationFactory<Program> factory)
         {
-            _webApplicationFactory = new WebApplicationFactory<Program>().WithWebHostBuilder(CustomizeWebHostBuilder);
+            _factory = factory.WithWebHostBuilder(CustomizeWebHostBuilder);
             _testOutputHelper = testOutputHelper;
         }
 
         private void CustomizeWebHostBuilder(IWebHostBuilder webHostBuilder)
         {
             webHostBuilder
-                .ConfigureAppConfiguration((context, configuration) =>
-                {
-                    string folder = Path.GetDirectoryName(GetType().Assembly.Location);
-                    string file = "ComponentTest/component.test.json";
-                    configuration.AddJsonFile(Path.Combine(folder, file));
-                })
                 .ConfigureLogging(loggingBuilder =>
                 {
                     loggingBuilder.ClearProviders();
@@ -60,7 +56,7 @@ namespace Api.Tests
         public async Task When_GET_is_called_on_the_api_should_return_200_OK()
         {
             // Arrange
-            using IServiceScope scope = _webApplicationFactory.Services.CreateScope();
+            using IServiceScope scope = _factory.Services.CreateScope();
             Fixture fixture = new();
             Order order = fixture.Create<Order>();
             order.Id = Guid.NewGuid();
@@ -87,6 +83,6 @@ namespace Api.Tests
         }
 
         public HttpClient SystemUnderTest =>
-            _webApplicationFactory.CreateClient();
+            _factory.CreateClient();
     }
 }
