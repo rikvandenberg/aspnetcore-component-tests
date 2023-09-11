@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Serilog;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -16,14 +17,15 @@ builder.Host.UseSerilog((context, config) =>
 });
 
 // RabbitMQ
+builder.Services.AddOptionsWithValidation<RabbitMqSettings>("RabbitMq");
 builder.Services.AddSingleton<ConnectionFactory>(sp =>
 {
-    IConfiguration configuration = sp.GetRequiredService<IConfiguration>();
+    var settings = sp.GetRequiredService<IOptions<RabbitMqSettings>>();
     return new ConnectionFactory
     {
-        HostName = configuration["RabbitMq:HostName"],
-        Password = configuration["RabbitMq:UserName"],
-        UserName = configuration["RabbitMq:Password"]
+        HostName = settings.Value.HostName,
+        Password = settings.Value.Password,
+        UserName = settings.Value.UserName
     };
 });
 builder.Services.AddSingleton<IConnection>(sp => sp.GetRequiredService<ConnectionFactory>().CreateConnection());

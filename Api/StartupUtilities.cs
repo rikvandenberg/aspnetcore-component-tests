@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Text;
 using Api.BusinessLayer;
@@ -12,7 +11,7 @@ using Polly.Registry;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
-internal static class StartupUtilities
+internal static partial class StartupUtilities
 {
     internal static void ConfigureDbContextOptions(DbContextOptionsBuilder optionsBuilder)
     {
@@ -41,10 +40,7 @@ internal static class StartupUtilities
 
     internal static void ConfigureBusinessLayer(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddOptions<ShopifySettings>()
-            .Bind(configuration.GetSection("Shopify"))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+        services.AddOptionsWithValidation<ShopifySettings>("Shopify");
         services.AddHttpClient<IProductsService, ShopifyProductsClient>((serviceProvider, client) =>
         {
             var settings = serviceProvider.GetRequiredService<IOptions<ShopifySettings>>();
@@ -53,29 +49,11 @@ internal static class StartupUtilities
         }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
     }
 
-    private sealed class ShopifySettings
-    {
-        [Required]
-        public Uri BaseUrl { get; init; } = default!;
-        [Required]
-        public string ApiKey { get; init; } = default!;
-    }
-
     internal static void ConfigureDataLayer(this IServiceCollection services)
     {
         services.AddDbContext<OrderDbContext>(
             optionsBuilder => ConfigureDbContextOptions(optionsBuilder.UseSqlite("Data Source=orders.db")),
             optionsLifetime: ServiceLifetime.Singleton);
         services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
-    }
-
-    internal static string ConfigureNotNullOrEmpty(this IConfiguration configuration, string configurationKey)
-    {
-        string value = configuration[configurationKey];
-        if (string.IsNullOrEmpty(value))
-        {
-            throw new ArgumentNullException(configurationKey);
-        }
-        return value;
     }
 }

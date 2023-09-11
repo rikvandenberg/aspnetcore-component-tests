@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Api
+namespace Api.DataLayer
 {
     public class Order
     {

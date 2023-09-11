@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31005.135
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "Api\Api.csproj", "{F5906382-23EA-4D33-AF5E-7A32365CC64B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests", "Api.Tests\Api.Tests.csproj", "{F24EFF2E-58E6-42F6-AFAB-94000E21D581}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Tests", "Api.Tests\Api.Tests.csproj", "{F24EFF2E-58E6-42F6-AFAB-94000E21D581}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Worker\Worker.csproj", "{3B3779D9-5739-499B-9003-6FA840D76269}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "Worker\Worker.csproj", "{3B3779D9-5739-499B-9003-6FA840D76269}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks", "BuildingBlocks\BuildingBlocks.csproj", "{32DBA2B6-2C86-48EC-B3C4-3C7DD860FC5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{3B3779D9-5739-499B-9003-6FA840D76269}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B3779D9-5739-499B-9003-6FA840D76269}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B3779D9-5739-499B-9003-6FA840D76269}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32DBA2B6-2C86-48EC-B3C4-3C7DD860FC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32DBA2B6-2C86-48EC-B3C4-3C7DD860FC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32DBA2B6-2C86-48EC-B3C4-3C7DD860FC5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32DBA2B6-2C86-48EC-B3C4-3C7DD860FC5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
