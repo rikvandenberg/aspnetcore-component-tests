@@ -21,12 +21,12 @@ namespace Api
 {
     public class Startup
     {
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -51,15 +51,15 @@ namespace Api
 
             services.AddHttpClient<IProductsService, ShopifyProductsClient>(client =>
             {
-                client.BaseAddress = new Uri(Configuration["Shopify:BaseUrl"]);
-                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", Configuration["Shopify:ApiKey"]);
+                client.BaseAddress = new Uri(_configuration["Shopify:BaseUrl"]!);
+                client.DefaultRequestHeaders.Add("X-Shopify-Access-Token", _configuration["Shopify:ApiKey"]);
             }).AddPolicyHandlerFromRegistry("defaultJsonResponse");
         }
 
         private void ConfigureDataLayer(IServiceCollection services)
         {
             services.AddDbContext<OrderDbContext>(
-                optionsBuilder => ConfigureDbContextOptions(optionsBuilder.UseSqlite("Data Source=orders.db")), 
+                optionsBuilder => ConfigureDbContextOptions(optionsBuilder.UseSqlite("Data Source=orders.db")),
                 optionsLifetime: ServiceLifetime.Singleton);
             services.AddScoped(typeof(IRepository<>), typeof(EntityFrameworkRepository<>));
         }
