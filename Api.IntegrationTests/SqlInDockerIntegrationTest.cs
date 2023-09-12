@@ -2,6 +2,8 @@ using Docker.DotNet;
 using Docker.DotNet.Models;
 using Xunit.Abstractions;
 using FluentAssertions;
+using Microsoft.VisualBasic;
+using DotNet.Testcontainers.Builders;
 
 namespace Api.IntegrationTests;
 
@@ -20,7 +22,7 @@ public class StartStopDockerContainerIntegrationTest : IDisposable
     }
 
     [Fact]
-    public async Task When_docker_mysql_is_started_should_insert_record()
+    public async Task Should_pull_start_and_kill_container()
     {
         // When
         Progress<JSONMessage> progress = new Progress<JSONMessage>();
@@ -41,6 +43,21 @@ public class StartStopDockerContainerIntegrationTest : IDisposable
 
         await Docker.Containers.KillContainerAsync(container.ID, new());
         await Docker.Containers.RemoveContainerAsync(container.ID, new());
+    }
+
+    [Fact]
+    public async Task Should_pull_start_and_kill_container_with_testcontainers()
+    {
+        // When
+        var container = new ContainerBuilder()
+            .WithImage("nginxdemos/hello:latest")
+            .Build();
+
+        await container.StartAsync();
+
+        // Then
+        //await container.StopAsync();
+        //await container.DisposeAsync();
     }
 
     public void Dispose()
