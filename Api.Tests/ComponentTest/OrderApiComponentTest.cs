@@ -81,7 +81,7 @@ namespace Api.Tests
 
             // Act #2
             HttpResponseMessage createResponse = await SystemUnderTest.PostAsync(
-                "/api/v1/orders", 
+                "/api/v1/orders",
                 JsonContent.Create(new CreateOrderDto()
                 {
                     ProductNumbers = new[] { "APPLE_IPHONE" },
@@ -102,7 +102,7 @@ namespace Api.Tests
 
 
         [Fact]
-        public async Task When_application_starts_up_should_load_config_from_json_file()
+        public void When_application_starts_up_should_load_config_from_json_file()
         {
             // Arrange
             IConfiguration configuration = _webApplicationFactory.Services.GetRequiredService<IConfiguration>();
