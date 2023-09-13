@@ -56,8 +56,8 @@ public class StartStopDockerContainerIntegrationTest : IDisposable
         await container.StartAsync();
 
         // Then
-        //await container.StopAsync();
-        //await container.DisposeAsync();
+        await container.StopAsync();
+        await container.DisposeAsync();
     }
 
     public void Dispose()
